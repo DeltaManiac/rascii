@@ -1,0 +1,8 @@
+[package]
+name = "rasciigraph"
+version = "0.1.0"
+authors = ["DeltaManiac <maxpaynered@gmail.com>"]
+
+[dependencies]
+statistical = "0.1.1"
+statrs = "0.9.0"

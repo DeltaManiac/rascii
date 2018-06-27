@@ -22,7 +22,7 @@ use std::f64;
         b
         }
 
-    fn scale_x_values<'a,'b>( values:&'a[i32], max_width:i32)->&'a[f64]{
+    fn scale_x_values( values:&[i32], max_width:i32)->Vec<f64>{
        let mut scaled_value:Vec<f64> = Vec::new();
         if values.len() as i32 >max_width{
 
@@ -30,10 +30,11 @@ use std::f64;
         for i in values {
             scaled_value.push(*i as f64)
         }
-       &scaled_value[..]
+        scaled_value.to_owned()
+    //    &scaled_value[..].to_owned()
     }
 
-    fn scale_y_value(values:&[f64],new_min:i32,new_max:i16,scale_from_old_zero:bool)->&[f64]{
+    fn scale_y_value(values:&[f64],new_min:i32,new_max:i16,scale_from_old_zero:bool)->Vec<f64>{
        let mut scaled_value:Vec<f64> = Vec::new();
         let mut y_min_value = values.iter().fold(f64::INFINITY,|a,&b| a.min(b));
         if scale_from_old_zero {
@@ -53,7 +54,7 @@ use std::f64;
             let d:f64 = c + new_min as f64;
             scaled_value.push(d);
         }
-       &scaled_value[..]
+       scaled_value.to_owned()
     }
     pub fn rasciigraph(values:Vec<i32>,height:Option<i16>,width:Option<i32>){
         let border_char = '*';
@@ -64,7 +65,7 @@ use std::f64;
         println!("MEAN {}", mean );
        let std_dev = standard_deviation(&values[..]);
         println!("std dev {:?}", std_dev );
-       let mut adjusted_value:&[f64] = scale_x_values(&values[..], max_width);
+       let mut adjusted_value = scale_x_values(&values[..], max_width);
        println!(" adjussted {:?}", adjusted_value );
        adjusted_value = scale_y_value( &adjusted_value[..],0,max_height,false);
        println!(" adjussted {:?}", adjusted_value );

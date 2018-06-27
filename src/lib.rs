@@ -70,21 +70,15 @@ pub mod a {
     fn get_ascii_field(values: Vec<f64>) ->Vec<Vec<char>>{
         let _empty_space = ' ';
         let mut field: Vec<Vec<char>> = vec![];
-//        for _i in 0..(values.len() as i32 + 1) {
-//            let mut temp: Vec<char> = Vec::new();
-//            for _j in 0..(values.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b)) as i32) + 1{
-//                temp.push(_empty_space)
-//            }
-//            field.push(temp);
-//        }
-        for _i in  0..(values.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b)) as i32){
+        for _i in  0..(values.len() as i32){
             let mut temp: Vec<char> = Vec::new();
-            for _j in 0..(values.len() as i32 + 1){
+            for _j in 0..(values.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b)) as i32 + 1){
                 temp.push(_empty_space)
             }
             field.push(temp);
         }
-        for x in (0..(values.len()-1)) as usize {
+        println!("len ; {}", values.len());
+        for x in 0..(values.len()-1) as usize {
             let y = values[x];
             let y_prev = if x != 0 { values[x - 1] } else { y };
             let y_next = if x != values.len()-1 { values[x + 1] } else { y };

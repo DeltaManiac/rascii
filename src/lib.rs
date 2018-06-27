@@ -67,6 +67,63 @@ pub mod a {
         scaled_value.to_owned()
     }
 
+    fn get_ascii_field(values: Vec<f64>) ->Vec<Vec<char>>{
+        let _empty_space = ' ';
+        let mut field: Vec<Vec<char>> = vec![];
+//        for _i in 0..(values.len() as i32 + 1) {
+//            let mut temp: Vec<char> = Vec::new();
+//            for _j in 0..(values.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b)) as i32) + 1{
+//                temp.push(_empty_space)
+//            }
+//            field.push(temp);
+//        }
+        for _i in  0..(values.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b)) as i32){
+            let mut temp: Vec<char> = Vec::new();
+            for _j in 0..(values.len() as i32 + 1){
+                temp.push(_empty_space)
+            }
+            field.push(temp);
+        }
+        for x in (0..(values.len()-1)) as usize {
+            let y = values[x];
+            let y_prev = if x != 0 { values[x - 1] } else { y };
+            let y_next = if x != values.len()-1 { values[x + 1] } else { y };
+            println!("x:{} , y:{} , field_len:{}, field_inner.len:{}",x,y,field.len(),field[0].len());
+            if ((y_prev - y) as i32).abs() > 1 {
+                let y = if y_prev - y > 0.0 { 1 } else { -1 };
+            }
+            field[x as usize][y as usize] = get_ascii_char(y_prev,y,y_next)
+        }
+        println!("{:?}", field);
+        field.to_owned()
+    }
+
+    fn get_ascii_char(y_prev: f64, y: f64, y_next: f64) -> char {
+        if y_next > y && y_prev > y {
+            '-'
+        } else if y_next < y && y_prev < y {
+            '-'
+        } else if y_next == y && y_prev < y {
+            '-'
+        } else if y_next < y && y_prev == y {
+            '-'
+        } else if y_next > y {
+            '/'
+        } else if y_next < y {
+            '\\'
+        } else if y_next == y {
+            '-'
+        } else if y_prev < y {
+            '/'
+        } else if y_prev > y {
+            '\\'
+        } else if y_prev == y {
+            '-'
+        } else {
+            '?'
+        }
+    }
+
     pub fn rasciigraph(values: Vec<i32>, height: Option<i32>, width: Option<i32>) {
         let border_char = '*';
         let max_width = width.unwrap_or(180);
@@ -82,6 +139,13 @@ pub mod a {
         println!(" adjussted {:?}", adjusted_value);
         adjusted_value = adjusted_value.iter().map(|x| x.round()).collect();
         println!(" adjussted {:?}", adjusted_value);
+        let field = get_ascii_field(adjusted_value);
+        for i in field.iter(){
+            for j in i.iter().rev(){
+                print!("{}",j);
+            }
+            print!("\n");
+        }
     }
 
 }

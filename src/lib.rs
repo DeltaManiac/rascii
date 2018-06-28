@@ -59,12 +59,12 @@ pub mod a {
         scaled_value.to_owned()
     }
 
-    fn get_ascii_field(values: Vec<f64>) ->Vec<Vec<char>>{
+    fn get_ascii_field(values: Vec<f64>) -> Vec<Vec<char>> {
         let _empty_space = ' ';
         let mut field: Vec<Vec<char>> = vec![];
-        for _i in  0..(values.len() as i32){
+        for _i in 0..(values.len() as i32) {
             let mut temp: Vec<char> = Vec::new();
-            for _j in 0..(values.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b)) as i32 + 1){
+            for _j in 0..(values.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b)) as i32 + 1) {
                 temp.push(_empty_space)
             }
             field.push(temp);
@@ -73,46 +73,46 @@ pub mod a {
         for x in 0..(values.len()) as usize {
             let y = values[x];
             let y_prev = if x != 0 { values[x - 1] } else { y };
-            let y_next = if x != values.len()-1 { values[x + 1] } else { y };
+            let y_next = if x != values.len() - 1 {
+                values[x + 1]
+            } else {
+                y
+            };
             // println!("x:{} , y:{} , field_len:{}, field_inner.len:{}",x,y,field.len(),field[0].len());
             if ((y_prev - y) as i32).abs() > 1 {
                 let step = if y_prev - y > 0.0 { 1 } else { -1 };
-                println!("step {}, y_prev {}, y {}",step,y_prev,y );
+                println!("step {}, y_prev {}, y {}", step, y_prev, y);
                 let mut _h = y as i32 + step;
-                    if step < 0 {
-                    while _h >  y_prev as i32 {
-
-                        if field[x as usize][_h as usize] == _empty_space{
+                if step < 0 {
+                    while _h > y_prev as i32 {
+                        if field[x as usize][_h as usize] == _empty_space {
                             field[x as usize][_h as usize] = '|';
                         }
                         _h = _h + step;
                     }
-
-                    } else {
-                    while _h <  y_prev as i32 {
-
-                        if field[x as usize][_h as usize] == _empty_space{
+                } else {
+                    while _h < y_prev as i32 {
+                        if field[x as usize][_h as usize] == _empty_space {
                             field[x as usize][_h as usize] = '|';
                         }
                         _h = _h + step;
-                    }
-
-                    }
-                for _i in ((y as i32+step)..y_prev as i32).step_by(step as usize){
-                        if field[x as usize][_i as usize] == _empty_space{
-                            field[x as usize][_i as usize] = '|'
-                        }
                     }
                 }
-                field[x as usize][y as usize] = get_ascii_char(y_prev,y,y_next)
+                for _i in ((y as i32 + step)..y_prev as i32).step_by(step as usize) {
+                    if field[x as usize][_i as usize] == _empty_space {
+                        field[x as usize][_i as usize] = '|'
+                    }
+                }
             }
-            for i in field.iter(){
-            println!("{:?}", i);
-            }
-            field.to_owned()
+            field[x as usize][y as usize] = get_ascii_char(y_prev, y, y_next)
         }
+        for i in field.iter() {
+            println!("{:?}", i);
+        }
+        field.to_owned()
+    }
 
-        fn get_ascii_char(y_prev: f64, y: f64, y_next: f64) -> char {
+    fn get_ascii_char(y_prev: f64, y: f64, y_next: f64) -> char {
         if y_next > y && y_prev > y {
             '-'
         } else if y_next < y && y_prev < y {
@@ -158,16 +158,17 @@ pub mod a {
         let field = get_ascii_field(adjusted_value.to_owned());
 
         for _i in (0..8).rev() {
-        for j in 0..adjusted_value.len(){
-            print!("{}",field[j][_i] );
-        }
-        print!("\n");
+            for j in 0..adjusted_value.len() {
+                print!("{}", field[j][_i]);
+            }
+            print!("\n");
         }
     }
 
 }
 
-#[cfg(test)]mod tests {
+#[cfg(test)]
+mod tests {
     #[test]
     fn it_works() {
         assert_eq!(2 + 2, 4);

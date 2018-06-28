@@ -1,14 +1,6 @@
-// extern crate statistical;
-// extern crate statrs;
 pub mod a {
     use std::cmp;
     use std::f64;
-    // use statistical::{mean,standard_deviation};
-    // use statrs::statistics::Variance;
-    pub fn hello() {
-        println!("HEIIII");
-    }
-
     fn mean(values: &[i32]) -> f64 {
         let sum: i32 = values.iter().sum();
         (sum as f64 / (values.len() as f64))
@@ -41,28 +33,28 @@ pub mod a {
         if scale_from_old_zero {
             y_min_value = 0.0;
         }
-        println!("y_min {}", y_min_value);
+        // println!("y_min {}", y_min_value);
         let y_max_value = values.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
-        println!("ymax {}", y_max_value);
+        // println!("ymax {}", y_max_value);
         let new_min = 0;
         let mut old_range = y_max_value - y_min_value;
         if old_range == 0.0 {
             old_range = 1.0;
         };
-        println!(" old range {}", old_range);
+        // println!(" old range {}", old_range);
         let new_range = new_max - new_min;
-        println!(" new range {}", new_range);
+        // println!(" new range {}", new_range);
         for i in values {
             let a: f64 = (i - y_min_value) as f64;
-            println!("a {}", a);
+            // println!("a {}", a);
             let b: f64 = a * new_range as f64;
-            println!("b {}", b);
+            // println!("b {}", b);
             let c: f64 = b / old_range as f64;
-            println!("c {}", c);
+            // println!("c {}", c);
             let d: f64 = c + new_min as f64;
-            println!("d {}", d);
+            // println!("d {}", d);
             scaled_value.push(d);
-            println!("scaled {:?}", scaled_value);
+            // println!("scaled {:?}", scaled_value);
         }
         scaled_value.to_owned()
     }
@@ -77,22 +69,50 @@ pub mod a {
             }
             field.push(temp);
         }
-        println!("len ; {}", values.len());
-        for x in 0..(values.len()-1) as usize {
+        println!("len ; {:?}", values);
+        for x in 0..(values.len()) as usize {
             let y = values[x];
             let y_prev = if x != 0 { values[x - 1] } else { y };
             let y_next = if x != values.len()-1 { values[x + 1] } else { y };
-            println!("x:{} , y:{} , field_len:{}, field_inner.len:{}",x,y,field.len(),field[0].len());
+            // println!("x:{} , y:{} , field_len:{}, field_inner.len:{}",x,y,field.len(),field[0].len());
             if ((y_prev - y) as i32).abs() > 1 {
-                let y = if y_prev - y > 0.0 { 1 } else { -1 };
-            }
-            field[x as usize][y as usize] = get_ascii_char(y_prev,y,y_next)
-        }
-        println!("{:?}", field);
-        field.to_owned()
-    }
+                let step = if y_prev - y > 0.0 { 1 } else { -1 };
+                println!("step {}, y_prev {}, y {}",step,y_prev,y );
+                let mut _h = y as i32 + step;
+                    if step < 0 {
+                    while _h >  y_prev as i32 {
 
-    fn get_ascii_char(y_prev: f64, y: f64, y_next: f64) -> char {
+                        if field[x as usize][_h as usize] == _empty_space{
+                            field[x as usize][_h as usize] = '|';
+                        }
+                        _h = _h + step;
+                    }
+
+                    } else {
+                    while _h <  y_prev as i32 {
+
+                        if field[x as usize][_h as usize] == _empty_space{
+                            field[x as usize][_h as usize] = '|';
+                        }
+                        _h = _h + step;
+                    }
+
+                    }
+                for _i in ((y as i32+step)..y_prev as i32).step_by(step as usize){
+                        if field[x as usize][_i as usize] == _empty_space{
+                            field[x as usize][_i as usize] = '|'
+                        }
+                    }
+                }
+                field[x as usize][y as usize] = get_ascii_char(y_prev,y,y_next)
+            }
+            for i in field.iter(){
+            println!("{:?}", i);
+            }
+            field.to_owned()
+        }
+
+        fn get_ascii_char(y_prev: f64, y: f64, y_next: f64) -> char {
         if y_next > y && y_prev > y {
             '-'
         } else if y_next < y && y_prev < y {
@@ -127,25 +147,27 @@ pub mod a {
         println!("MEAN {}", mean);
         let std_dev = standard_deviation(&values[..]);
         println!("std dev {:?}", std_dev);
+        // println!(" values BEFOREE {:?}", values);
         let mut adjusted_value = scale_x_values(&values[..], max_width);
         println!(" adjussted {:?}", adjusted_value);
         adjusted_value = scale_y_value(&adjusted_value[..], 0, max_height, false);
+        // println!(" values aFTER {:?}", values);
         println!(" adjussted {:?}", adjusted_value);
         adjusted_value = adjusted_value.iter().map(|x| x.round()).collect();
-        println!(" adjussted {:?}", adjusted_value);
-        let field = get_ascii_field(adjusted_value);
-        for i in field.iter(){
-            for j in i.iter().rev(){
-                print!("{}",j);
-            }
-            print!("\n");
+        println!(" adjussted {:?}", adjusted_value.to_owned());
+        let field = get_ascii_field(adjusted_value.to_owned());
+
+        for _i in (0..8).rev() {
+        for j in 0..adjusted_value.len(){
+            print!("{}",field[j][_i] );
+        }
+        print!("\n");
         }
     }
 
 }
 
-#[cfg(test)]
-mod tests {
+#[cfg(test)]mod tests {
     #[test]
     fn it_works() {
         assert_eq!(2 + 2, 4);

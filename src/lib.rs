@@ -34,28 +34,28 @@ pub mod grapher {
         if scale_from_old_zero {
             y_min_value = 0.0;
         }
-        // println!("y_min {}", y_min_value);
+        // // // println!("y_min {}", y_min_value);
         let y_max_value = values.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
-        // println!("ymax {}", y_max_value);
+        // // println!("ymax {}", y_max_value);
         let new_min = 0;
         let mut old_range = y_max_value - y_min_value;
         if old_range == 0.0 {
             old_range = 1.0;
         };
-        // println!(" old range {}", old_range);
+        // // println!(" old range {}", old_range);
         let new_range = new_max - new_min;
-        // println!(" new range {}", new_range);
+        // // println!(" new range {}", new_range);
         for i in values {
             let a: f64 = (i - y_min_value) as f64;
-            // println!("a {}", a);
+            // // println!("a {}", a);
             let b: f64 = a * new_range as f64;
-            // println!("b {}", b);
+            // // println!("b {}", b);
             let c: f64 = b / old_range as f64;
-            // println!("c {}", c);
+            // // println!("c {}", c);
             let d: f64 = c + new_min as f64;
-            // println!("d {}", d);
+            // // println!("d {}", d);
             scaled_value.push(d);
-            // println!("scaled {:?}", scaled_value);
+            // // println!("scaled {:?}", scaled_value);
         }
         scaled_value.to_owned()
     }
@@ -70,7 +70,7 @@ pub mod grapher {
             }
             field.push(temp);
         }
-        println!("len ; {:?}", values);
+        // println!("len ; {:?}", values);
         for x in 0..(values.len()) as usize {
             let y = values[x];
             let y_prev = if x != 0 { values[x - 1] } else { y };
@@ -79,10 +79,10 @@ pub mod grapher {
             } else {
                 y
             };
-            // println!("x:{} , y:{} , field_len:{}, field_inner.len:{}",x,y,field.len(),field[0].len());
+            // // println!("x:{} , y:{} , field_len:{}, field_inner.len:{}",x,y,field.len(),field[0].len());
             if ((y_prev - y) as i32).abs() > 1 {
                 let step = if y_prev - y > 0.0 { 1 } else { -1 };
-                println!("step {}, y_prev {}, y {}", step, y_prev, y);
+                // println!("step {}, y_prev {}, y {}", step, y_prev, y);
                 let mut _h = y as i32 + step;
                 if step < 0 {
                     while _h > y_prev as i32 {
@@ -108,7 +108,7 @@ pub mod grapher {
             field[x as usize][y as usize] = get_ascii_char(y_prev, y, y_next)
         }
         for i in field.iter() {
-            println!("{:?}", i);
+            // println!("{:?}", i);
         }
         field.to_owned()
     }
@@ -143,19 +143,19 @@ pub mod grapher {
         let border_char = '*';
         let max_width = width.unwrap_or(180);
         let max_height = height.unwrap_or(cmp::min(20, *values.iter().max().unwrap()));
-        println!("{} m {} ", max_height, max_width);
+        // println!("{} m {} ", max_height, max_width);
         let mean = mean(&values[..]);
-        println!("MEAN {}", mean);
+        // println!("MEAN {}", mean);
         let std_dev = standard_deviation(&values[..]);
-        println!("std dev {:?}", std_dev);
-        // println!(" values BEFOREE {:?}", values);
+        // println!("std dev {:?}", std_dev);
+        // // println!(" values BEFOREE {:?}", values);
         let mut adjusted_value = scale_x_values(&values[..], max_width);
-        println!(" adjussted {:?}", adjusted_value);
+        // println!(" adjussted {:?}", adjusted_value);
         adjusted_value = scale_y_value(&adjusted_value[..], 0, max_height, false);
-        // println!(" values aFTER {:?}", values);
-        println!(" adjussted {:?}", adjusted_value);
+        // // println!(" values aFTER {:?}", values);
+        // println!(" adjussted {:?}", adjusted_value);
         adjusted_value = adjusted_value.iter().map(|x| x.round()).collect();
-        println!(" adjussted {:?}", adjusted_value.to_owned());
+        // println!(" adjussted {:?}", adjusted_value.to_owned());
         let field = get_ascii_field(adjusted_value.to_owned());
         for _i in (0..field[0].len()).rev() {
             for j in 0..adjusted_value.len() {
@@ -165,12 +165,52 @@ pub mod grapher {
         }
     }
 
-}
 
-#[cfg(test)]
-mod tests {
     #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
+    fn test_calc_mean() {
+        let val = vec![1, 2, 3, 4, 5];
+        assert_eq!(mean(&val[..]), 3.0);
+    }
+
+    #[test]
+    fn test_calc_mean_10() {
+        let val = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        assert_eq!(mean(&val[..]), 5.5);
+    }
+
+    #[test]
+    fn test_calc_mean_100() {
+        let mut val: Vec<i32> = Vec::new();
+        for i in 1..=100 {
+            val.push(i);
+        }
+        assert_eq!(mean(&val[..]), 50.5);
+    }
+
+    #[test]
+    fn test_calc_stddev() {
+        let val = vec![1, 2, 3, 4, 5];
+        assert_eq!(standard_deviation(&val[..]), 1.5811388300841898);
+    }
+
+    #[test]
+    fn test_calc_stddev_10() {
+        let val = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        assert_eq!(standard_deviation(&val[..]), 3.0276503540974917);
+    }
+
+    #[test]
+    fn test_calc_stddev_100() {
+        let mut val: Vec<i32> = Vec::new();
+        for i in 1..=100 {
+            val.push(i);
+        }
+        assert_eq!(standard_deviation(&val[..]),29.011491975882016);
+    }
+
+    #[test]
+    fn test_scale_x(){
+        let val:Vec<i32>=vec![1,2,3,4,5];
+        assert_eq!(scale_x_values(&val[..],12),vec![1.0,2.0,3.0,4.0,5.0])
     }
 }

@@ -1,6 +1,7 @@
-pub mod a {
+pub mod grapher {
     use std::cmp;
     use std::f64;
+
     fn mean(values: &[i32]) -> f64 {
         let sum: i32 = values.iter().sum();
         (sum as f64 / (values.len() as f64))
@@ -138,7 +139,7 @@ pub mod a {
         }
     }
 
-    pub fn rasciigraph(values: Vec<i32>, height: Option<i32>, width: Option<i32>) {
+    pub fn graph(values: Vec<i32>, height: Option<i32>, width: Option<i32>) {
         let border_char = '*';
         let max_width = width.unwrap_or(180);
         let max_height = height.unwrap_or(cmp::min(20, *values.iter().max().unwrap()));
@@ -156,8 +157,7 @@ pub mod a {
         adjusted_value = adjusted_value.iter().map(|x| x.round()).collect();
         println!(" adjussted {:?}", adjusted_value.to_owned());
         let field = get_ascii_field(adjusted_value.to_owned());
-
-        for _i in (0..8).rev() {
+        for _i in (0..field[0].len()).rev() {
             for j in 0..adjusted_value.len() {
                 print!("{}", field[j][_i]);
             }

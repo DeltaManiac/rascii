@@ -139,6 +139,26 @@ pub mod grapher {
         }
     }
 
+    fn print_top_row(max_val: f64, max_width: &i32) {
+        //let mean_str = "Mean:".to_owned() + &format!("{:.5}",mean);
+        let max_str = "* Upper Value :".to_owned() + &format!("{:.2} ", max_val);
+        let string_offset = max_width - max_str.len() as i32;
+        print!("{}", max_str);
+        for i in 0..*max_width - max_str.len() as i32 {
+            print!("*");
+        }
+    }
+
+    fn print_bottom_row(min_val: f64, max_width: &i32) {
+        //let mean_str = "Mean:".to_owned() + &format!("{:.5}",mean);
+        let max_str = "* Lower Value :".to_owned() + &format!("{:.2} ", min_val);
+        let string_offset = max_width - max_str.len() as i32;
+        print!("{}", max_str);
+        for i in 0..*max_width - max_str.len() as i32 {
+            print!("*");
+        }
+    }
+
     pub fn graph(values: Vec<i32>, height: Option<i32>, width: Option<i32>) {
         let border_char = '*';
         let max_width = width.unwrap_or(180);
@@ -150,6 +170,10 @@ pub mod grapher {
         // println!("std dev {:?}", std_dev);
         // // println!(" values BEFOREE {:?}", values);
         let mut adjusted_value = scale_x_values(&values[..], max_width);
+        let max_val = adjusted_value
+            .iter()
+            .fold(f64::NEG_INFINITY, |a, &b| a.max(b));
+        let min_val = adjusted_value.iter().fold(f64::INFINITY, |a, &b| a.min(b));
         // println!(" adjussted {:?}", adjusted_value);
         adjusted_value = scale_y_value(&adjusted_value[..], 0, max_height, false);
         // // println!(" values aFTER {:?}", values);
@@ -157,14 +181,18 @@ pub mod grapher {
         adjusted_value = adjusted_value.iter().map(|x| x.round()).collect();
         // println!(" adjussted {:?}", adjusted_value.to_owned());
         let field = get_ascii_field(adjusted_value.to_owned());
+
+        print_top_row(max_val, &max_width);
+        print!("\n");
         for _i in (0..field[0].len()).rev() {
             for j in 0..adjusted_value.len() {
                 print!("{}", field[j][_i]);
             }
             print!("\n");
         }
+        print_bottom_row(min_val, &max_width);
+        print!("\n");
     }
-
 
     #[test]
     fn test_calc_mean() {
@@ -205,12 +233,12 @@ pub mod grapher {
         for i in 1..=100 {
             val.push(i);
         }
-        assert_eq!(standard_deviation(&val[..]),29.011491975882016);
+        assert_eq!(standard_deviation(&val[..]), 29.011491975882016);
     }
 
     #[test]
-    fn test_scale_x(){
-        let val:Vec<i32>=vec![1,2,3,4,5];
-        assert_eq!(scale_x_values(&val[..],12),vec![1.0,2.0,3.0,4.0,5.0])
+    fn test_scale_x() {
+        let val: Vec<i32> = vec![1, 2, 3, 4, 5];
+        assert_eq!(scale_x_values(&val[..], 12), vec![1.0, 2.0, 3.0, 4.0, 5.0])
     }
 }

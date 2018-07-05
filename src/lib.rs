@@ -1,6 +1,6 @@
 pub mod grapher {
-        use std::cmp;
         use std::f64;
+        use std::iter::Sum;
         use std::convert::From;
         use std::fmt::Display;
         use std::fmt::Debug;
@@ -165,7 +165,7 @@ pub mod grapher {
              
              
              
-             fn get_min_max<T>(values:Vec<T>)->(f64,f64)
+             fn get_min_max<T>(values:&Vec<T>)->(f64,f64)
              where 
              T: PartialOrd + Clone,
               f64: From<T>
@@ -173,9 +173,9 @@ pub mod grapher {
              values
              .iter()
              .fold((f64::INFINITY, f64::NEG_INFINITY), |a, ref b| (
-            a.0.min((f64::from((**b).clone()))),
-            a.1.max((f64::from((**b).clone())))
-            ))
+            a.0.min(f64::from((**b).clone())),
+            a.1.max(f64::from((**b).clone())))
+            )
              }
              
              
@@ -184,11 +184,33 @@ pub mod grapher {
              T: PartialOrd + Display + Debug + Clone,
              f64: From<T>,
              {
-            println!("{:?}",get_min_max(values));
-            
+        let min_max = get_min_max(&values);
+            println!("{:?}",min_max);
+            let max_width = width.unwrap_or(180);
+            let max_height = min_max.1.min(20_f64) as i16;
+            let mean = gen_mean(&values);
+            println!("{:?}",mean);
     }
     
+    // TODO(DeltaManiac): Fix mean
     
+    /*fn gen_mean<'a,T>(values: &'a Vec<T>) -> i32 
+        where T: PartialOrd + Display + Debug + Clone,
+    f64:Sum<From<&'a T>>
+    {
+        1
+            //let sum= values.iter().sum();
+            //(sum as f64 / (values.len() as f64))
+             }
+             */
+             /* fn gen_standard_deviation<T>(values: &[f64]) -> f64
+             where T: PartialOrd + Display + Debug + Clone
+             {
+             let mean = mean(&values[..]);
+             let a: f64 = values.iter().map(|x| ((*x as f64) - mean).powi(2)).sum();
+             (a / (values.len() as f64 - 1.0)).sqrt()
+              }
+    */
     pub fn graph(values: Vec<f64>, height: Option<i32>, width: Option<i32>) {
             let border_char = '*';
             let max_width = width.unwrap_or(180);
@@ -223,6 +245,17 @@ pub mod grapher {
         }
         print_bottom_row(min_val, &max_width);
             print!("\n");
+    }
+    
+    
+    #[test]
+        fn test_min_max_float(){
+            assert_eq!(get_min_max(vec![7.0, 6.0, 5.0, 4.5, 3.5,2.7, 1.0]),(1.0,7.0));
+    }
+    
+    #[test]
+        fn test_min_max_int(){
+            assert_eq!(get_min_max(vec![7, 6, 5, 4, 3,2, 1]),(1.0,7.0));
     }
     
     //    #[test]

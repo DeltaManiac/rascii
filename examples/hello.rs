@@ -1,18 +1,73 @@
 extern crate rasciigraph;
 fn main() {
     //rasciigraph::grapher::gen_graph(vec![7.0, 6.0, 5.0, 4.5, 3.5, 2.7, 1_f64], None, None);
-        rasciigraph::grapher::gen_graph(vec![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],None,None);
-        rasciigraph::grapher::gen_graph(vec![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],None,None);
-        rasciigraph::grapher::graph(vec![1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0,13.0,14.0,15.0,16.0,17.0,18.0,19.0],None,None);
-        rasciigraph::grapher::gen_graph(vec![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],None,None);rasciigraph::grapher::gen_graph(vec![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],None,None);rasciigraph::grapher::gen_graph(vec![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],None,None);
-    
-    
-    
-        rasciigraph::grapher::gen_graph(vec![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],None,None);
-        
-        rasciigraph::grapher::gen_graph(vec![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],None,None);rasciigraph::grapher::gen_graph(vec![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],None,None);rasciigraph::grapher::gen_graph(vec![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],None,None);
-    
-        //rasciigraph::grapher::gen_graph(vec![1231, 223, 33123, 423, 125, 6, 7], Some(20), None);
+    rasciigraph::grapher::gen_graph(
+        vec![
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        ],
+        None,
+        None,
+    );
+    rasciigraph::grapher::gen_graph(
+        vec![
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+        ],
+        None,
+        None,
+    );
+    rasciigraph::grapher::graph(
+        vec![
+            1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0,
+            17.0, 18.0, 19.0,
+        ],
+        None,
+        None,
+    );
+    rasciigraph::grapher::gen_graph(
+        vec![
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+        ],
+        None,
+        None,
+    );
+    rasciigraph::grapher::gen_graph(
+        vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+        None,
+        None,
+    );
+    rasciigraph::grapher::gen_graph(
+        vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        None,
+        None,
+    );
+
+    rasciigraph::grapher::gen_graph(
+        vec![
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        ],
+        None,
+        None,
+    );
+
+    rasciigraph::grapher::gen_graph(
+        vec![
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+        ],
+        None,
+        None,
+    );
+    rasciigraph::grapher::gen_graph(
+        vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+        None,
+        None,
+    );
+    rasciigraph::grapher::gen_graph(
+        vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        None,
+        None,
+    );
+
+    //rasciigraph::grapher::gen_graph(vec![1231, 223, 33123, 423, 125, 6, 7], Some(20), None);
     //rasciigraph::grapher::graph(vec![7.0, 6.0, 5.0, 4.5, 3.5,2.7, 1_f64], None, None);
         /*rasciigraph::grapher::graph(vec![1, 2, 3, 4, 5, 6, 7], None, None);
 rasciigraph::grapher::graph(vec![1, 2, 3, 4, 5, 6, 7], Some(20), None);

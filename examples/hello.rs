@@ -1,8 +1,8 @@
 extern crate rasciigraph;
 fn main() {
     rasciigraph::grapher::gen_graph(vec![7.0, 6.0, 5.0, 4.5, 3.5, 2.7, 1_f64], None, None);
-    rasciigraph::grapher::gen_graph(vec![1231, 223, 33123, 423, 125, 6, 7], Some(20), None);
-    //rasciigraph::grapher::graph(vec![7.0, 6.0, 5.0, 4.5, 3.5,2.7, 1_f64], None, None);
+    //rasciigraph::grapher::gen_graph(vec![1231, 223, 33123, 423, 125, 6, 7], Some(20), None);
+    rasciigraph::grapher::graph(vec![7.0, 6.0, 5.0, 4.5, 3.5,2.7, 1_f64], None, None);
         /*rasciigraph::grapher::graph(vec![1, 2, 3, 4, 5, 6, 7], None, None);
 rasciigraph::grapher::graph(vec![1, 2, 3, 4, 5, 6, 7], Some(20), None);
 rasciigraph::grapher::graph(vec![1, 2, 3, 4, 5, 6, 7], None, Some(20));

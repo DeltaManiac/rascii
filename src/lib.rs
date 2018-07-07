@@ -16,20 +16,19 @@ pub mod grapher {
         (a / (values.len() as f64 - 1.0)).sqrt()
     }
 
-    fn scale_x_values(values: &[f64], max_width: i32) -> Vec<f64> {
+    fn scale_x_values(values: &[f64], max_width: i16) -> Vec<f64> {
         let mut scaled_value: Vec<f64> = Vec::new();
-        if values.len() as i32 > max_width {}
+        if values.len()  as i16 > max_width {}
         for i in values {
             scaled_value.push(*i as f64)
         }
         scaled_value.to_owned()
-        //    &scaled_value[..].to_owned()
     }
 
     fn scale_y_value(
         values: &[f64],
-        new_min: i32,
-        new_max: i32,
+        new_min: i16,
+        new_max: i16,
         scale_from_old_zero: bool,
     ) -> Vec<f64> {
         let mut scaled_value: Vec<f64> = Vec::new();
@@ -82,10 +81,10 @@ pub mod grapher {
             } else {
                 y
             };
-            // // println!("x:{} , y:{} , field_len:{}, field_inner.len:{}",x,y,field.len(),field[0].len());
+             println!("x:{} , y:{} , y_prev:{}, field_len:{}, field_inner.len:{}",x,y,field.len(),field[0].len(), y_prev);
             if ((y_prev - y) as i32).abs() > 1 {
                 let step = if y_prev - y > 0.0 { 1 } else { -1 };
-                // println!("step {}, y_prev {}, y {}", step, y_prev, y);
+                 println!("step {}, y_prev {}, y {}", step, y_prev, y);
                 let mut _h = y as i32 + step;
                 if step < 0 {
                     while _h > y_prev as i32 {
@@ -142,29 +141,29 @@ pub mod grapher {
         }
     }
 
-    fn print_top_row(max_val: f64, max_width: &i32) {
+    fn print_top_row(max_val: f64, max_width: &i16) {
         //let mean_str = "Mean:".to_owned() + &format!("{:.5}",mean);
         let max_str = "* Upper Value :".to_owned() + &format!("{:.2} ", max_val);
-        let string_offset = max_width - max_str.len() as i32;
+        let string_offset = max_width - max_str.len() as i16;
         print!("{}", max_str);
-        for i in 0..*max_width - max_str.len() as i32 {
+        for i in 0..*max_width - max_str.len() as i16 {
             print!("*");
         }
     }
 
-    fn print_bottom_row(min_val: f64, max_width: &i32) {
+    fn print_bottom_row(min_val: f64, max_width: &i16) {
         //let mean_str = "Mean:".to_owned() + &format!("{:.5}",mean);
         let max_str = "* Lower Value :".to_owned() + &format!("{:.2} ", min_val);
-        let string_offset = max_width - max_str.len() as i32;
+        let string_offset = max_width - max_str.len() as i16;
         print!("{}", max_str);
-        for i in 0..*max_width - max_str.len() as i32 {
+        for i in 0..*max_width - max_str.len() as i16 {
             print!("*");
         }
     }
 
     fn get_min_max<T>(values: &Vec<T>) -> (f64, f64)
     where
-        T: PartialOrd + Clone,
+        T: PartialOrd + Clone ,
         f64: From<T>,
     {
         values
@@ -188,11 +187,65 @@ pub mod grapher {
         let max_height = min_max.1.min(20_f64) as i16;
         let mean = gen_mean(&values);
         println!("MEAN {:?}", mean);
-             println!("std_dev{:?}",gen_standard_deviation(&values,None));println!("std_dev{:?}",gen_standard_deviation(&values,Some(mean)));
-    }
+             println!("std_dev{:?}",gen_standard_deviation(&values,None));println!("std_dev{:?}",gen_standard_deviation(&values,Some(mean)));//println!("scale_x{:?}",gen_scale_x_values(&values,max_width));
+    
+             
+             //_________________________________________________________\\
+             let mut adjusted_value = gen_scale_x_values(&values, max_width);
+             let (min_val,max_val) = adjusted_value
+             .iter()
+             .fold((f64::INFINITY, f64::NEG_INFINITY), |a, ref b| {
+             (
+                a.0.min(**b),
+                a.1.max(**b),
+                )
+             });
+             println!(" x_gen adjussted {:?}", adjusted_value);
+             adjusted_value = scale_y_value(&adjusted_value[..], 0, max_height, false);
+             println!(" y_gen adjussted {:?}", adjusted_value);
+             adjusted_value = adjusted_value.iter().map(|x| x.round()).collect();
+             let field = get_ascii_field(adjusted_value.to_owned());
+             println!("{:?}",field);
+             for _k in field.iter(){
+             println!("{:?}",_k);
+             }
+             print_top_row(max_val, &max_width);
+             print!("\n");
+             for _i in (0..field[0].len()).rev() {
+             for j in 0..adjusted_value.len() {
+             print!("{}", field[j][_i]);
+             }
+             print!("\n");
+             }
+             print_bottom_row(min_val, &max_width);
+             /*
+             
+             
+             let max_val = adjusted_value
+             .iter()
+             .fold(f64::NEG_INFINITY, |a, &b| a.max(b));
+             let min_val = adjusted_value.iter().fold(f64::INFINITY, |a, &b| a.min(b));
+             // println!(" adjussted {:?}", adjusted_value);
+             adjusted_value = scale_y_value(&adjusted_value[..], 0, max_height, false);
+             // // println!(" values aFTER {:?}", values);
+             // println!(" adjussted {:?}", adjusted_value);
+             adjusted_value = adjusted_value.iter().map(|x| x.round()).collect();
+             // println!(" adjussted {:?}", adjusted_value.to_owned());
+             let field = get_ascii_field(adjusted_value.to_owned());
+             
+             print_top_row(max_val, &max_width);
+             print!("\n");
+             for _i in (0..field[0].len()).rev() {
+             for j in 0..adjusted_value.len() {
+             print!("{}", field[j][_i]);
+             }
+             print!("\n");
+             }
+             print_bottom_row(min_val, &max_width);
+             */
+             }
 
-    // TODO(DeltaManiac): Fix mean
-    fn gen_mean<'a,T>(values: &'a Vec<T>) -> f64 
+             fn gen_mean<'a,T>(values: &'a Vec<T>) -> f64 
         where T: PartialOrd + Display + Debug + Clone,
     f64:From<T>
     {
@@ -209,23 +262,28 @@ pub mod grapher {
              (a / (values.len() as f64 - 1.0)).sqrt()
               }
               
-    /* fn gen_standard_deviation<T>(values: &[f64]) -> f64
-             where T: PartialOrd + Display + Debug + Clone
-             {
-             let mean = mean(&values[..]);
-             let a: f64 = values.iter().map(|x| ((*x as f64) - mean).powi(2)).sum();
-             (a / (values.len() as f64 - 1.0)).sqrt()
+              fn gen_scale_x_values<'a,T>(values: &'a Vec<T>, max_width:i16) -> Vec<f64>
+              where T: PartialOrd + Display + Debug + Clone,
+              f64:From<T>
+              {
+              let mut scaled_value: Vec<f64> = Vec::new();
+              if values.len() as i16 > max_width {}
+              for i in values {
+              scaled_value.push(f64::from((*i).clone()))
               }
-    */
-    pub fn graph(values: Vec<f64>, height: Option<i32>, width: Option<i32>) {
-        let border_char = '*';
+              scaled_value.to_owned()
+              }
+              
+    pub fn graph(values: Vec<f64>, height: Option<i16>, width: Option<i16>) {
+        
+              let border_char = '*';
         let max_width = width.unwrap_or(180);
         //let max_height = height.unwrap_or(cmp::min(20, *values.iter().max().unwrap()));
         let max_height = height.unwrap_or(
             values
                 .iter()
                 .fold(f64::NEG_INFINITY, |a, &b| a.max(b))
-                .min(20 as f64) as i32,
+                .min(20 as f64) as i16,
         );
         // println!("{} m {} ", max_height, max_width);
         let mean = mean(&values[..]);
@@ -233,19 +291,23 @@ pub mod grapher {
         let std_dev = standard_deviation(&values[..]);
         // println!("std dev {:?}", std_dev);
         // // println!(" values BEFOREE {:?}", values);
-        let mut adjusted_value = scale_x_values(&values[..], max_width);
+             let mut adjusted_value = scale_x_values(&values[..], max_width);
         let max_val = adjusted_value
             .iter()
             .fold(f64::NEG_INFINITY, |a, &b| a.max(b));
         let min_val = adjusted_value.iter().fold(f64::INFINITY, |a, &b| a.min(b));
-        // println!(" adjussted {:?}", adjusted_value);
-        adjusted_value = scale_y_value(&adjusted_value[..], 0, max_height, false);
+         println!(" x adjussted {:?}", adjusted_value);
+             println!(" x adjussted {:?}", adjusted_value);
+             adjusted_value = scale_y_value(&adjusted_value[..], 0, max_height, false);
         // // println!(" values aFTER {:?}", values);
-        // println!(" adjussted {:?}", adjusted_value);
+         println!(" y adjussted {:?}", adjusted_value);
         adjusted_value = adjusted_value.iter().map(|x| x.round()).collect();
         // println!(" adjussted {:?}", adjusted_value.to_owned());
         let field = get_ascii_field(adjusted_value.to_owned());
-
+             println!("{:?}",field);
+             for _k in field.iter(){
+             println!("{:?}",_k);
+             }
         print_top_row(max_val, &max_width);
         print!("\n");
         for _i in (0..field[0].len()).rev() {
@@ -256,7 +318,8 @@ pub mod grapher {
         }
         print_bottom_row(min_val, &max_width);
         print!("\n");
-    }
+    
+              }
 
     #[test]
     fn test_min_max_float() {

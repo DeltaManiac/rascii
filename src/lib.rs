@@ -183,7 +183,7 @@ pub mod grapher {
     {
         let min_max = get_min_max(&values);
         println!("{:?}", min_max);
-        let max_width = width.unwrap_or(180);
+        let max_width = width.unwrap_or(5);
         let max_height = min_max.1.min(20_f64) as i16;
         let mean = gen_mean(&values);
         println!("MEAN {:?}", mean);
@@ -267,9 +267,38 @@ pub mod grapher {
               f64:From<T>
               {
               let mut scaled_value: Vec<f64> = Vec::new();
-              if values.len() as i16 > max_width {}
+              println!("=============================================================");
+              if values.len() as i16 > max_width {
+              let get_position=|i:i16| -> usize{
+              let _cd = ((values.len() as i16) * i)/max_width;
+              //println!("i:{},val*i:{},_cd{}",i,((values.len() as i16 - 1) * i),_cd);
+              _cd as usize
+              };
+              
+              for i in 0..max_width{
+              
+              let mut sum:f64=0_f64;
+              let mut _n = 0_f64;
+              let _end_idx = get_position(i+1)-1;
+              
+              if _end_idx > 0 {
+              for _g in get_position(i).._end_idx{
+              sum += f64::from(values[_g].clone());
+              _n+=1.0;
+              println!("_g:{},val_g:{},sum:{}",_g,values[_g],sum);
+              }
+              }
+              println!("###########i:{},i+1:{},mean:{}",get_position(i),get_position(i+1)-1,sum/_n as f64);
+              scaled_value.push(sum/_n);
+              }
+              
+              } else {
               for i in values {
               scaled_value.push(f64::from((*i).clone()))
+              
+              }
+              
+              println!("=============================================================");
               }
               scaled_value.to_owned()
               }

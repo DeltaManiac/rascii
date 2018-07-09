@@ -106,8 +106,10 @@ pub mod grapher {
     fn print_top_row(max_val: f64, max_width: &u16) {
         let max_str = "* Upper Value :".to_owned() + &format!("{:.2} ", max_val);
         print!("{}", max_str);
-        for _i in 0..*max_width - max_str.len() as u16 {
-            print!("*");
+        if (max_str.len() as u16).lt(max_width) {
+            for _i in 0..*max_width - max_str.len() as u16 {
+                print!("*");
+            }
         }
     }
 

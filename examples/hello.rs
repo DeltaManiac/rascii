@@ -61,11 +61,11 @@ fn main() {
     );*/
 
     let mut rand_vec = Vec::new();
-    for i in 0..12000 {
-        rand_vec.push(f64::cos(i as f64) * 10.0);
+    for i in 0..200 {
+        rand_vec.push(f64::sin(i as f64) * 10.0);
         //rand_vec.push(i as i32);
     }
-    rasciigraph::grapher::gen_graph(rand_vec, None, None);
+    rasciigraph::grapher::gen_graph(rand_vec, None, Some(23));
     //rasciigraph::grapher::gen_graph(vec![1231, 223, 33123, 423, 125, 6, 7], Some(20), None);
     //rasciigraph::grapher::graph(vec![7.0, 6.0, 5.0, 4.5, 3.5,2.7, 1_f64], None, None);
         /*rasciigraph::grapher::graph(vec![1, 2, 3, 4, 5, 6, 7], None, None);

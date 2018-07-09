@@ -1,3 +1,6 @@
+//! A module that allows to create ascii graphs based on a homogenous collection of data.
+//! Inspired by https://github.com/linkedin/asciietch
+
 pub mod grapher {
     use std::convert::From;
     use std::f64;
@@ -138,6 +141,11 @@ pub mod grapher {
             })
     }
 
+    /// This is the only function currently exposed
+    /// # Arguments
+    /// * `values` - A vector containing the values to be plotted
+    /// * `height` - The height to which the graph must be plotted, default and max of 20
+    /// * `width` - The width to which the graph must be plotted, default and max of 180
     pub fn graph<T>(values: Vec<T>, height: Option<i16>, width: Option<u16>)
     where
         T: PartialOrd + Display + Debug + Clone,

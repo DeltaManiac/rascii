@@ -107,12 +107,19 @@ pub mod grapher {
             print!("*");
         }
     }
-    //TODO: Insert Mean and Std+Dev
-    fn print_bottom_row(min_val: f64, max_width: &u16) {
-        let max_str = "* Lower Value :".to_owned() + &format!("{:.2} ", min_val);
+
+    fn print_bottom_row(min_val: f64, max_width: &u16, mean: &f64, std_dev: &f64) {
+        let max_str = "* Lower Value :".to_owned()
+            + &format!("{:.2} ", min_val)
+            + &"* Mean:".to_owned()
+            + &format!("{:.2}", mean)
+            + &"* Std Dev:".to_owned()
+            + &format!("{:.2}", std_dev);
         print!("{}", max_str);
-        for _i in 0..*max_width - max_str.len() as u16 {
-            print!("*");
+        if (max_str.len() as u16).lt(max_width) {
+            for _i in 0..*max_width - max_str.len() as u16 {
+                print!("*");
+            }
         }
     }
 
@@ -131,7 +138,7 @@ pub mod grapher {
             })
     }
 
-    pub fn gen_graph<T>(values: Vec<T>, height: Option<i16>, width: Option<u16>)
+    pub fn graph<T>(values: Vec<T>, height: Option<i16>, width: Option<u16>)
     where
         T: PartialOrd + Display + Debug + Clone,
         f64: From<T>,
@@ -139,7 +146,9 @@ pub mod grapher {
         let min_max = get_min_max(&values);
         let max_width = width.unwrap_or(180);
         let max_height = height.unwrap_or(min_max.1.min(20_f64) as i16);
-        let mut adjusted_value = gen_scale_x_values(&values, max_width);
+        let mean = mean(&values);
+        let std_dev = standard_deviation(&values, Some(mean));
+        let mut adjusted_value = scale_x_values(&values, max_width);
         let (min_val, max_val) = get_min_max(&values);
         adjusted_value = scale_y_value(&adjusted_value[..], 0, max_height, false);
         let field = get_ascii_field(adjusted_value.to_owned());
@@ -151,10 +160,11 @@ pub mod grapher {
             }
             print!("\n");
         }
-        print_bottom_row(min_val, &max_width);
+        print_bottom_row(min_val, &max_width, &mean, &std_dev);
+        print!("\n");
     }
 
-    fn gen_mean<'a, T>(values: &'a [T]) -> f64
+    fn mean<'a, T>(values: &'a [T]) -> f64
     where
         T: PartialOrd + Display + Debug + Clone,
         f64: From<T>,
@@ -164,20 +174,20 @@ pub mod grapher {
             .fold(0_f64, |a, ref b| a + f64::from((**b).clone())) / values.len() as f64
     }
 
-    fn gen_standard_deviation<'a, T>(values: &'a Vec<T>, mean: Option<f64>) -> f64
+    fn standard_deviation<'a, T>(values: &'a Vec<T>, mean_val: Option<f64>) -> f64
     where
         T: PartialOrd + Display + Debug + Clone,
         f64: From<T>,
     {
-        let mean = mean.unwrap_or(gen_mean(&values));
+        let mean_val = mean_val.unwrap_or(mean(&values));
         let a: f64 = values
             .iter()
-            .map(|x| (f64::from((x).clone()) - mean).powi(2))
+            .map(|x| (f64::from((x).clone()) - mean_val).powi(2))
             .sum();
         (a / (values.len() as f64 - 1.0)).sqrt()
     }
 
-    fn gen_scale_x_values<'a, T>(values: &'a [T], max_width: u16) -> Vec<f64>
+    fn scale_x_values<'a, T>(values: &'a [T], max_width: u16) -> Vec<f64>
     where
         T: PartialOrd + Display + Debug + Clone,
         f64: From<T>,
@@ -190,7 +200,7 @@ pub mod grapher {
             };
 
             for i in 0..max_width {
-                scaled_value.push(gen_mean(&values[get_position(i)..get_position(i + 1)]));
+                scaled_value.push(mean(&values[get_position(i)..get_position(i + 1)]));
             }
         } else {
             for i in values {
@@ -211,28 +221,28 @@ pub mod grapher {
     #[test]
     fn test_calc_mean() {
         let val = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        assert_eq!(gen_mean(&val), 3.0);
+        assert_eq!(mean(&val), 3.0);
     }
 
     #[test]
     fn test_calc_stddev() {
         let val = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        assert_eq!(gen_standard_deviation(&val, None), 1.5811388300841898);
+        assert_eq!(standard_deviation(&val, None), 1.5811388300841898);
     }
 
     #[test]
-    fn test_gen_scale_x_values() {
+    fn test_scale_x_values() {
         let val = vec![0, 1, 2, 3, 4, 5, 7, 8, 9];
         assert_eq!(
-            gen_scale_x_values(&val[..], 10),
+            scale_x_values(&val[..], 10),
             vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 7.0, 8.0, 9.0]
         );
     }
 
     #[test]
-    fn test_gen_scale_x_values_scale_down() {
+    fn test_scale_x_values_scale_down() {
         let val = vec![0, 1, 2, 3, 4, 5, 7, 8, 9];
-        assert_eq!(gen_scale_x_values(&val[..], 3), vec![1.0, 4.0, 8.0]);
+        assert_eq!(scale_x_values(&val[..], 3), vec![1.0, 4.0, 8.0]);
         assert_eq!(gen_scale_x_values(&val[..], 4), vec![0.5, 2.5, 4.5, 8.0]);
     }
 

@@ -15,14 +15,14 @@ pub mod grapher {
         if scale_from_old_zero {
             y_min_value = 0.0;
         }
-        //let new_min = 0;
         let mut old_range = y_max_value - y_min_value;
         if old_range == 0.0 {
             old_range = 1.0;
         };
         let new_range: f64 = (new_max - new_min) as f64;
         for i in values {
-            scaled_value.push((((i - y_min_value) * new_range) / old_range) + new_min as f64);
+            scaled_value
+                .push(((((i - y_min_value) * new_range) / old_range) + new_min as f64).round());
         }
         scaled_value.to_owned()
     }
@@ -142,7 +142,6 @@ pub mod grapher {
         let mut adjusted_value = gen_scale_x_values(&values, max_width);
         let (min_val, max_val) = get_min_max(&values);
         adjusted_value = scale_y_value(&adjusted_value[..], 0, max_height, false);
-        adjusted_value = adjusted_value.iter().map(|x| x.round()).collect();
         let field = get_ascii_field(adjusted_value.to_owned());
         print_top_row(max_val, &max_width);
         print!("\n");
@@ -178,7 +177,7 @@ pub mod grapher {
         (a / (values.len() as f64 - 1.0)).sqrt()
     }
 
-    fn gen_scale_x_values<'a, T>(values: &'a Vec<T>, max_width: u16) -> Vec<f64>
+    fn gen_scale_x_values<'a, T>(values: &'a [T], max_width: u16) -> Vec<f64>
     where
         T: PartialOrd + Display + Debug + Clone,
         f64: From<T>,
@@ -202,16 +201,11 @@ pub mod grapher {
     }
 
     #[test]
-    fn test_min_max_float() {
+    fn test_min_max() {
         assert_eq!(
             get_min_max(&vec![7.0, 6.0, 5.0, 4.5, 3.5, 2.7, 1.0]),
             (1.0, 7.0)
         );
-    }
-
-    #[test]
-    fn test_min_max_int() {
-        assert_eq!(get_min_max(&vec![7, 6, 5, 4, 3, 2, 1]), (1.0, 7.0));
     }
 
     #[test]
@@ -220,47 +214,72 @@ pub mod grapher {
         assert_eq!(gen_mean(&val), 3.0);
     }
 
-    //
-    //    #[test]
-    //    fn test_calc_mean_10() {
-    //        let val = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    //        assert_eq!(mean(&val[..]), 5.5);
-    //    }
-    //
-    //    #[test]
-    //    fn test_calc_mean_100() {
-    //        let mut val: Vec<i32> = Vec::new();
-    //        for i in 1..=100 {
-    //            val.push(i);
-    //        }
-    //        assert_eq!(mean(&val[..]), 50.5);
-    //    }
-    //
     #[test]
     fn test_calc_stddev() {
         let val = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        //assert_eq!(standard_deviation(&val[..]), 1.5811388300841898);
         assert_eq!(gen_standard_deviation(&val, None), 1.5811388300841898);
     }
-    //
-    //    #[test]
-    //    fn test_calc_stddev_10() {
-    //        let val = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    //        assert_eq!(standard_deviation(&val[..]), 3.0276503540974917);
-    //    }
-    //
-    //    #[test]
-    //    fn test_calc_stddev_100() {
-    //        let mut val: Vec<i32> = Vec::new();
-    //        for i in 1..=100 {
-    //            val.push(i);
-    //        }
-    //        assert_eq!(standard_deviation(&val[..]), 29.011491975882016);
-    //    }
-    //
-    //    #[test]
-    //    fn test_scale_x() {
-    //        let val: Vec<i32> = vec![1, 2, 3, 4, 5];
-    //        assert_eq!(scale_x_values(&val[..], 12), vec![1.0, 2.0, 3.0, 4.0, 5.0])
-    //    }
+
+    #[test]
+    fn test_gen_scale_x_values() {
+        let val = vec![0, 1, 2, 3, 4, 5, 7, 8, 9];
+        assert_eq!(
+            gen_scale_x_values(&val[..], 10),
+            vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 7.0, 8.0, 9.0]
+        );
+    }
+
+    #[test]
+    fn test_gen_scale_x_values_scale_down() {
+        let val = vec![0, 1, 2, 3, 4, 5, 7, 8, 9];
+        assert_eq!(gen_scale_x_values(&val[..], 3), vec![1.0, 4.0, 8.0]);
+        assert_eq!(gen_scale_x_values(&val[..], 4), vec![0.5, 2.5, 4.5, 8.0]);
+    }
+
+    #[test]
+    fn test_scale_y_values() {
+        let val = vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 7.0, 8.0, 9.0];
+        assert_eq!(
+            scale_y_value(&val[..], 0, 20, false),
+            vec![0.0, 2.0, 4.0, 7.0, 9.0, 11.0, 16.0, 18.0, 20.0]
+        );
+        assert_eq!(
+            scale_y_value(&val[..], 0, 10, false),
+            vec![0.0, 1.0, 2.0, 3.0, 4.0, 6.0, 8.0, 9.0, 10.0]
+        );
+    }
+
+    #[test]
+    fn test_get_ascii_fields_asc() {
+        let val = vec![0.0, 2.0, 4.0, 7.0, 9.0, 11.0, 16.0, 18.0, 20.0];
+        let field = get_ascii_field(val);
+        assert_eq!(field[0][0], '/');
+        assert_eq!(field[1][1], '|');
+        assert_eq!(field[2][3], '|');
+        assert_eq!(field[3][0], ' ');
+    }
+
+    #[test]
+    fn test_get_ascii_fields_des() {
+        let val = vec![20.0, 18.0, 16.0, 11.0, 9.0, 7.0, 4.0, 2.0, 0.0];
+        let field = get_ascii_field(val);
+        assert_eq!(
+            field[0],
+            vec![
+                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+                ' ', ' ', ' ', ' ', '-',
+            ]
+        );
+        assert_eq!(field[1][18], '\\');
+        assert_eq!(field[1][19], '|');
+        assert_eq!(field[2][3], ' ');
+        assert_eq!(field[3][0], ' ');
+    }
+
+    #[test]
+    fn test_get_ascii_char() {
+        assert_eq!(get_ascii_char(0.0, 0.0, 0.0), '-');
+        assert_eq!(get_ascii_char(0.0, 0.0, 1.0), '/');
+        assert_eq!(get_ascii_char(1.0, 0.0, -1.0), '\\');
+    }
 }

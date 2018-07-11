@@ -149,8 +149,8 @@ pub mod grapher {
     /// * `height` - The height to which the graph must be plotted, default and max of 20
     /// * `width` - The width to which the graph must be plotted, default and max of 180
     /// * `border` - Draw the border around graph with additional information
-    
-    pub fn graph<T>(values: Vec<T>, height: Option<i16>, width: Option<u16>,border:Option<bool>)
+
+    pub fn graph<T>(values: Vec<T>, height: Option<i16>, width: Option<u16>, border: Option<bool>)
     where
         T: PartialOrd + Display + Debug + Clone,
         f64: From<T>,
@@ -164,12 +164,12 @@ pub mod grapher {
         let (min_val, max_val) = get_min_max(&values);
         adjusted_value = scale_y_value(&adjusted_value[..], 0, max_height, false);
         let field = get_ascii_field(adjusted_value.to_owned());
-            let draw_border = border.unwrap_or(false);
-            if draw_border == true {
-                print_top_row(max_val, &max_width);
-                print!("\n");
+        let draw_border = border.unwrap_or(false);
+        if draw_border == true {
+            print_top_row(max_val, &max_width);
+            print!("\n");
         }
-            
+
         for _i in (0..field[0].len()).rev() {
             for j in 0..adjusted_value.len() {
                 print!("{}", field[j][_i]);
@@ -177,10 +177,9 @@ pub mod grapher {
             print!("\n");
         }
         if draw_border == true {
-                print_bottom_row(min_val, &max_width, &mean, &std_dev);
-                print!("\n");
+            print_bottom_row(min_val, &max_width, &mean, &std_dev);
+            print!("\n");
         }
-        
     }
 
     fn mean<'a, T>(values: &'a [T]) -> f64

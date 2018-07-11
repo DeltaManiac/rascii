@@ -148,7 +148,9 @@ pub mod grapher {
     /// * `values` - A vector containing the values to be plotted
     /// * `height` - The height to which the graph must be plotted, default and max of 20
     /// * `width` - The width to which the graph must be plotted, default and max of 180
-    pub fn graph<T>(values: Vec<T>, height: Option<i16>, width: Option<u16>)
+    /// * `border` - Draw the border around graph with additional information
+    
+    pub fn graph<T>(values: Vec<T>, height: Option<i16>, width: Option<u16>,border:Option<bool>)
     where
         T: PartialOrd + Display + Debug + Clone,
         f64: From<T>,
@@ -162,16 +164,23 @@ pub mod grapher {
         let (min_val, max_val) = get_min_max(&values);
         adjusted_value = scale_y_value(&adjusted_value[..], 0, max_height, false);
         let field = get_ascii_field(adjusted_value.to_owned());
-        print_top_row(max_val, &max_width);
-        print!("\n");
+            let draw_border = border.unwrap_or(false);
+            if draw_border == true {
+                print_top_row(max_val, &max_width);
+                print!("\n");
+        }
+            
         for _i in (0..field[0].len()).rev() {
             for j in 0..adjusted_value.len() {
                 print!("{}", field[j][_i]);
             }
             print!("\n");
         }
-        print_bottom_row(min_val, &max_width, &mean, &std_dev);
-        print!("\n");
+        if draw_border == true {
+                print_bottom_row(min_val, &max_width, &mean, &std_dev);
+                print!("\n");
+        }
+        
     }
 
     fn mean<'a, T>(values: &'a [T]) -> f64
@@ -253,7 +262,7 @@ pub mod grapher {
     fn test_scale_x_values_scale_down() {
         let val = vec![0, 1, 2, 3, 4, 5, 7, 8, 9];
         assert_eq!(scale_x_values(&val[..], 3), vec![1.0, 4.0, 8.0]);
-        assert_eq!(gen_scale_x_values(&val[..], 4), vec![0.5, 2.5, 4.5, 8.0]);
+        assert_eq!(scale_x_values(&val[..], 4), vec![0.5, 2.5, 4.5, 8.0]);
     }
 
     #[test]
